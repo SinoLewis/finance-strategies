@@ -1,0 +1,89 @@
+1. Select language.
+    Obviously py
+
+2. Select market(battlegroud)
+    Stocks, Currencies, CryptoCurrencies
+    CryptoCurrencies - 24/7
+    Stocks & Currencies 9AM-4PM
+
+3. Pick a base for hosting
+    Raspberry pi server
+    Cloud services - Google Cloud console, Azure, AWS
+
+4. Building the bot
+    - Registered and approved by an exchange
+      Binance, Coinbase, Kraken
+    - Enabled Api usage
+    - Decide on hosting services
+
+
+THE BOT
+1. Only two states: BUY, SELL
+2. Fixed thresholds, Dynamic thresholds(Advanced)
+3. Trade one coin BTC/USD
+
+A. DECISION MAKING FLOW
+if BUY: has price dropped enough?
+        if YES: place BUY order & update next operation to SELL
+        if NO: has price gone up enough to indicate a trend
+            if YES: place BUY order & update next operation to SELL
+            if NO: do NOTHING
+if SELL: have i made profit?
+        if YES: place SELL order & update next operation to BUY
+        if NO: has price gone down enough to indicate a trend
+            if YES: place SELL order & update next operation to BUY
+            if NO: do NOTHING
+
+THE BLUE PRINT
+1. a bool value for BUY & SELL
+2. thresholds for buying & selling
+    - pct decrease or increase in price since last DECISION was made
+    eg BOT BUY 100$ of BTC, then its 102$. pct increase = 2%
+       thus; so if SELL threshold is 1% our BOT SELLs since we are above threshold
+    
+    - thus; we need 4 CONST thresholds, 2 for each state
+
+    A. BUY thresholds
+        DIP_THRESHOLD
+        UPWARD_TREND_THRESHOLD
+    B. SELL threshold
+        PROFIT_THRESHOLD
+        STOP_LOSS_THRESHOLD
+
+API HELPER FUNCTIONS 
+1. FUNCTION getBalance():
+    DO: GET request to exchange Api for your account balance
+    RETURN: Balances
+    
+2. FUNCTION getMarketPrice():
+    DO: GET request to exchange Api for the BTC price
+    RETURN: Market Price
+
+3. FUNCTION placeBuyOrder():
+    DO: 
+        1. Calculate the amount to sell (based on some threshold you set e.g 50% of total balance)
+        2 Send POST request to exchange Api to do  a SELL operation
+    RETURN: Price at operation execution
+
+4. FUNCTION placeSellOrder():
+    DO:
+        1. Calculate the amount to buy (based on some threshold you set e.g 50% of total balance)
+        2 Send POST request to exchange Api to do  a BUY operation
+    RETURN: Price at operation execution 
+
+5. FUNCTION getOperationalDetails():
+    DO: GET request to Api for the operation details
+    RETURN: Details of the operation 
+
+    NB: Beware of the Currency in use
+
+BOT LOOP CYCLE
+1. Define an infinite loop. lets say an execution after every 30 secs
+    FUNCTION startBot():
+        INFINITE LOOP:
+            attemptToMakeTrade()
+            sleep(30)
+2. Set variables & const & Decision making flow
+3. At every iteration our BOT will check its state and attempt to make a trade based on the threshold
+
+POLISHING THE BOT
